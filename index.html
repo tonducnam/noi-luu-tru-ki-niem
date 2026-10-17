@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kỷ Yếu Lớp Chúng Mình — Lưu Bút & Tiểu Sử Lớp Học</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Cấu hình Tailwind & CSS tùy chỉnh -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans selection:bg-amber-200 selection:text-amber-900">
+
+  <!-- =========================================================
+       THÔNG BÁO TOAST NỔI
+     ========================================================= -->
+  <div id="toast-container" class="hidden fixed bottom-5 right-5 z-[90] flex items-center gap-3 bg-indigo-950 text-amber-50 px-5 py-3.5 rounded-2xl shadow-2xl border border-amber-400/30 animate-bounce">
+    <i data-lucide="sparkles" class="w-5 h-5 text-amber-400 shrink-0"></i>
+    <span id="toast-message" class="text-sm font-medium"></span>
+  </div>
+
+  <!-- =========================================================
+       HEADER KỶ YẾU HOÀI NIỆM
+     ========================================================= -->
+  <header class="relative overflow-hidden bg-gradient-to-br from-amber-50 via-[#FFF9EC] to-rose-50 border-b border-amber-200/70">
+    <!-- Họa tiết trang trí nền -->
+    <div class="absolute -top-24 -left-24 w-80 h-80 bg-amber-300/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-10 right-10 w-72 h-72 bg-rose-300/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-10 relative z-10">
+      <!-- Thanh điều hướng trên cùng -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-amber-900/10">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-rose-500 flex items-center justify-center text-white shadow-md shadow-amber-500/20 rotate-3">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-700 block">
+              Lưu Bút & Tiểu Sử Lớp Học
+            </span>
+            <h1 class="text-lg sm:text-xl font-extrabold text-indigo-950 tracking-tight">
+              Kỷ Yếu Lớp Chúng Mình
+            </h1>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <button
+            onclick="openClassInfoModal()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/80 hover:bg-white text-slate-700 border border-amber-200 shadow-sm transition"
+            title="Chỉnh sửa tên lớp, niên khóa, GVCN"
+          >
+            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>Sửa Thông Tin Lớp</span>
+          </button>
+
+          <button
+            onclick="openAddPhotoModal(null)"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white shadow-md shadow-amber-500/20 transition"
+          >
+            <i data-lucide="camera" class="w-4 h-4"></i>
+            <span>Đăng Ảnh Kỷ Niệm</span>
+          </button>
+
+          <button
+            onclick="openMemberModal(null)"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-950 hover:bg-indigo-900 text-amber-50 shadow-md transition"
+          >
+            <i data-lucide="user-plus" class="w-4 h-4 text-amber-400"></i>
+            <span>Thêm Thành Viên</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nội dung chính của Banner Lớp -->
+      <div class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/90 border border-amber-300/70 text-amber-900 text-xs font-bold">
+            <i data-lucide="graduation-cap" class="w-4 h-4 text-amber-700"></i>
+            <span id="banner-school"></span>
+            <span>•</span>
+            <span id="banner-classname"></span>
+          </div>
+
+          <h2 id="banner-title" class="text-3xl sm:text-5xl font-black text-indigo-950 leading-tight"></h2>
+
+          <p id="banner-motto" class="text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl italic"></p>
+
+          <div class="flex flex-wrap items-center gap-4 pt-1 text-xs sm:text-sm text-slate-700 font-medium">
+            <span class="inline-flex items-center gap-1.5 bg-white/80 px-3.5 py-1.5 rounded-xl border border-amber-200/80">
+              <i data-lucide="heart" class="w-4 h-4 text-rose-500 fill-rose-500"></i>
+              GVCN: <strong id="banner-teacher" class="text-indigo-950"></strong>
+            </span>
+            <span class="inline-flex items-center gap-1.5 bg-white/80 px-3.5 py-1.5 rounded-xl border border-amber-200/80">
+              <i data-lucide="map-pin" class="w-4 h-4 text-amber-600"></i>
+              <span id="banner-room"></span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Khung Thống kê Kỷ Niệm kiểu Polaroid ghép -->
+        <div class="lg:col-span-5 grid grid-cols-3 gap-3 sm:gap-4">
+          <div
+            onclick="switchMainTab('members')"
+            class="cursor-pointer bg-white p-4 rounded-2xl shadow-md border border-amber-100 hover:-translate-y-1 transition text-center group"
+          >
+            <div class="w-10 h-10 mx-auto rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <i data-lucide="users" class="w-5 h-5"></i>
+            </div>
+            <div id="stat-members-count" class="text-2xl sm:text-3xl font-black text-indigo-950">0</div>
+            <div class="text-xs font-semibold text-slate-500 mt-0.5">
+              Hồ sơ thành viên
+            </div>
+          </div>
+
+          <div
+            onclick="switchMainTab('gallery')"
+            class="cursor-pointer bg-white p-4 rounded-2xl shadow-md border border-rose-100 hover:-translate-y-1 transition text-center group"
+          >
+            <div class="w-10 h-10 mx-auto rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <i data-lucide="camera" class="w-5 h-5"></i>
+            </div>
+            <div id="stat-photos-count" class="text-2xl sm:text-3xl font-black text-indigo-950">0</div>
+            <div class="text-xs font-semibold text-slate-500 mt-0.5">
+              Bức ảnh kỷ niệm
+            </div>
+          </div>
+
+          <div
+            onclick="switchMainTab('guestbook')"
+            class="cursor-pointer bg-white p-4 rounded-2xl shadow-md border border-indigo-100 hover:-translate-y-1 transition text-center group"
+          >
+            <div class="w-10 h-10 mx-auto rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-2 group-hover:scale-110 transition">
+              <i data-lucide="message-square-heart" class="w-5 h-5"></i>
+            </div>
+            <div id="stat-notes-count" class="text-2xl sm:text-3xl font-black text-indigo-950">0</div>
+            <div class="text-xs font-semibold text-slate-500 mt-0.5">
+              Dòng lưu bút
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       THANH CHUYỂN TAB CHÍNH (STICKY)
+     ========================================================= -->
+  <div class="sticky top-0 z-30 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-amber-200/70 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between overflow-x-auto no-scrollbar py-2.5 gap-3">
+      <div class="flex items-center gap-2">
+        <button
+          id="tab-btn-members"
+          onclick="switchMainTab('members')"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition whitespace-nowrap bg-indigo-950 text-amber-50 shadow-md"
+        >
+          <i data-lucide="users" class="w-4 h-4 text-amber-400"></i>
+          <span>Tiểu Sử & Kho Ảnh Từng Bạn</span>
+          <span id="tab-badge-members" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-amber-500/20 text-amber-300">0</span>
+        </button>
+
+        <button
+          id="tab-btn-gallery"
+          onclick="switchMainTab('gallery')"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition whitespace-nowrap text-slate-600 hover:bg-amber-100/60"
+        >
+          <i data-lucide="image" class="w-4 h-4 text-rose-400"></i>
+          <span>Kho Ảnh Chung Cả Lớp</span>
+          <span id="tab-badge-gallery" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-rose-500/20 text-rose-300">0</span>
+        </button>
+
+        <button
+          id="tab-btn-guestbook"
+          onclick="switchMainTab('guestbook')"
+          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition whitespace-nowrap text-slate-600 hover:bg-amber-100/60"
+        >
+          <i data-lucide="message-square-heart" class="w-4 h-4 text-emerald-400"></i>
+          <span>Sổ Lưu Bút Chung</span>
+          <span id="tab-badge-guestbook" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-300">0</span>
+        </button>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2 text-xs text-slate-500">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+        <span>Bấm vào thẻ của bất kỳ bạn nào để xem tiểu sử & tải ảnh kỷ niệm vào hồ sơ bạn ấy!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       NỘI DUNG CHÍNH THEO TAB
+     ========================================================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- TAB 1: HỒ SƠ TIỂU SỬ & KHO ẢNH TỪNG BẠN -->
+    <section id="section-members" class="space-y-8">
+      <!-- Thanh tìm kiếm & Lọc theo Tổ / Ban cán sự -->
+      <div class="bg-white p-4 sm:p-5 rounded-3xl shadow-sm border border-amber-200/70 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+          <input
+            id="member-search-input"
+            type="text"
+            oninput="handleSearchInput(this.value)"
+            placeholder="Tìm bạn theo tên, biệt danh, ước mơ, câu nói thương hiệu..."
+            class="w-full pl-11 pr-10 py-3 rounded-2xl bg-amber-50/50 border border-amber-200/80 focus:bg-white focus:border-amber-500 focus:outline-none text-sm"
+          />
+          <button
+            id="clear-search-btn"
+            onclick="clearSearch()"
+            class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div id="group-filter-container" class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+          <!-- Render bằng JS -->
+        </div>
+      </div>
+
+      <!-- Lưới Thẻ Tiểu Sử Thành Viên -->
+      <div id="members-grid-container"></div>
+    </section>
+
+    <!-- TAB 2: KHO ẢNH CHUNG CẢ LỚP -->
+    <section id="section-gallery" class="hidden space-y-8">
+      <div class="bg-white p-5 rounded-3xl shadow-sm border border-amber-200/70 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-black text-indigo-950 flex items-center gap-2">
+              <i data-lucide="camera" class="w-5 h-5 text-rose-500"></i>
+              <span>Kho Ảnh Kỷ Niệm Chung Cả Lớp</span>
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500">
+              Tất cả những bức ảnh được lưu trong tiểu sử từng thành viên và các sự kiện chung của lớp đều hội tụ tại đây.
+            </p>
+          </div>
+
+          <button
+            onclick="openAddPhotoModal(null)"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white text-xs sm:text-sm font-bold shadow-md shadow-rose-500/20 transition"
+          >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Tải Lên Ảnh Kỷ Niệm Mới</span>
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-2 border-t border-amber-100 justify-between items-start sm:items-center">
+          <!-- Lọc theo danh mục sự kiện -->
+          <div id="photo-category-filter-container" class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 max-w-full">
+            <!-- Render bằng JS -->
+          </div>
+
+          <!-- Lọc theo bạn xuất hiện trong ảnh -->
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <i data-lucide="filter" class="w-4 h-4 text-amber-600"></i>
+            <select
+              id="photo-member-filter-select"
+              onchange="handlePhotoMemberFilterChange(this.value)"
+              class="text-xs font-bold bg-amber-50 border border-amber-200 text-indigo-950 rounded-xl px-3 py-2 focus:outline-none"
+            >
+              <!-- Render bằng JS -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lưới Ảnh Polaroid -->
+      <div id="photos-grid-container"></div>
+    </section>
+
+    <!-- TAB 3: SỔ LƯU BÚT CHUNG TOÀN LỚP -->
+    <section id="section-guestbook" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-3xl border border-amber-200/70 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-black text-indigo-950 flex items-center gap-2">
+            <i data-lucide="message-square-heart" class="w-6 h-6 text-rose-500"></i>
+            <span>Những Dòng Lưu Bút Thương Yêu</span>
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Tổng hợp tất cả lời nhắn nhủ, lời chúc thi tốt được gửi vào tiểu sử của từng thành viên trong lớp.
+          </p>
+        </div>
+        <button
+          onclick="switchMainTab('members')"
+          class="px-4 py-2.5 rounded-2xl bg-indigo-950 text-amber-50 text-xs sm:text-sm font-bold"
+        >
+          Chọn 1 bạn để viết lưu bút →
+        </button>
+      </div>
+
+      <div id="guestbook-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Render bằng JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       FOOTER KỶ YẾU
+     ========================================================= -->
+  <footer class="mt-16 border-t border-amber-200/70 bg-amber-50/50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2 flex-wrap">
+        <i data-lucide="book-open" class="w-4 h-4 text-amber-600"></i>
+        <span id="footer-classname" class="font-bold text-indigo-950"></span>
+        <span>— Nơi lưu giữ thanh xuân và những bức ảnh kỷ niệm trong tiểu sử từng thành viên.</span>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        <button
+          onclick="handleRestoreSampleData()"
+          class="underline hover:text-indigo-950 font-semibold"
+        >
+          Khôi phục dữ liệu mẫu
+        </button>
+        <span id="sync-status-badge" class="hidden items-center gap-1 bg-white px-2.5 py-1 rounded-lg border border-amber-200 text-[11px]">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+          ID Phiên đồng bộ: <code id="sync-uid-text" class="font-mono"></code>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================
+       CÁC VÙNG CHỨA MODAL (ĐƯỢC ĐIỀU KHIỂN BẰNG JAVASCRIPT)
+     ========================================================= -->
+  <!-- 1. Modal Chi tiết Tiểu sử & Kho ảnh cá nhân -->
+  <div id="profile-modal-root" class="hidden"></div>
+
+  <!-- 2. Modal Thêm / Chỉnh sửa Thành viên -->
+  <div id="member-form-modal-root" class="hidden"></div>
+
+  <!-- 3. Modal Đăng Ảnh Kỷ Niệm -->
+  <div id="add-photo-modal-root" class="hidden"></div>
+
+  <!-- 4. Modal Chỉnh sửa Thông tin Lớp -->
+  <div id="class-info-modal-root" class="hidden"></div>
+
+  <!-- 5. Lightbox Xem ảnh phóng to toàn màn hình -->
+  <div id="lightbox-modal-root" class="hidden"></div>
+
+  <!-- 6. Hộp thoại Xác nhận xóa -->
+  <div id="confirm-dialog-root" class="hidden"></div>
+
+  <!-- =========================================================
+       JAVASCRIPT LOGIC & FIREBASE TÍCH HỢP
+     ========================================================= -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>
